@@ -1,10 +1,12 @@
 package main
 
 import (
+	"log"
+
 	"github.com/jinzhu/configor"
+
 	"github.com/vanbien2402/first-web-demo/internal/api"
 	"github.com/vanbien2402/first-web-demo/internal/api/configs"
-	"log"
 )
 
 func main() {

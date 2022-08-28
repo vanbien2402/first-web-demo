@@ -1,10 +1,12 @@
 package api
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
+
 	"github.com/vanbien2402/first-web-demo/internal/api/configs"
 	"github.com/vanbien2402/first-web-demo/internal/pkg/rds"
-	"log"
 )
 
 type Server struct {
@@ -20,7 +22,8 @@ func (s *Server) Start() error {
 func NewServer(config *configs.Config) (*Server, error) {
 	db, err := rds.Connect(&config.DB)
 	if err != nil {
-		log.Print("connect DB failed", err)
+		log.Fatal("connect DB failed", err)
+		return nil, err
 	}
 	router := gin.New()
 	_ = router.SetTrustedProxies(nil)

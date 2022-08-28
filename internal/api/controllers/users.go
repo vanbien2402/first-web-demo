@@ -1,66 +1,120 @@
 package controllers
 
 import (
+	"github.com/vanbien2402/first-web-demo/internal/api/middleware"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
-	"github.com/vanbien2402/first-web-demo/internal/models"
-	"gorm.io/gorm"
-	"log"
+
+	"github.com/vanbien2402/first-web-demo/internal/api/domain"
 )
 
-type usersController struct {
-	db *gorm.DB
+type userController struct {
+	userService domain.UserService
 }
 
-//IUsersController UsersController interface
-type IUsersController interface {
-	//GetUsers Get Users function
-	GetUsers(c *gin.Context)
-	//CreateUser Create User function
-	CreateUser(c *gin.Context)
-	//UpdateUser Update User function
-	UpdateUser(c *gin.Context)
-	//DeleteUser Delete User function
-	DeleteUser(c *gin.Context)
-}
-
-//GetUsers Get Users function
-func (ctl *usersController) GetUsers(c *gin.Context) {
-	var users []models.User
-	ctl.db.Find(&users)
-	c.JSON(200, &users)
-}
-
-//CreateUser Create User function
-func (ctl *usersController) CreateUser(c *gin.Context) {
-	var user models.User
-	if err := c.BindJSON(&user); err != nil {
-		log.Println("bind json failed when create user", err)
+//Register Register User function
+func (ctl *userController) Register(c *gin.Context) {
+	ctx := c.Request.Context()
+	var req domain.CreateParams
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Abort()
+		return
 	}
-	ctl.db.Create(&user)
-	c.JSON(200, user)
+	resp, err := ctl.userService.Create(ctx, req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Abort()
+		return
+	}
+	c.JSON(http.StatusOK, &resp)
+}
+
+//Login user log in
+func (ctl *userController) Login(c *gin.Context) {
+	ctx := c.Request.Context()
+	userName, password, ok := c.Request.BasicAuth()
+	if len(userName) == 0 || len(password) == 0 || !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user name or password invalid"})
+	}
+	user, err := ctl.userService.Validate(ctx, userName, password)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.Abort()
+		return
+	}
+	tokenString, err := middleware.GenerateJWT(user.UserName, user.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Abort()
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+}
+
+//GetUser get user
+func (ctl *userController) GetUser(c *gin.Context) {
+	ctx := c.Request.Context()
+	var req domain.GetParams
+	if err := c.BindUri(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Abort()
+		return
+	}
+	resp, err := ctl.userService.Get(ctx, req.UserName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Abort()
+		return
+	}
+	c.JSON(http.StatusOK, &resp)
 }
 
 //UpdateUser Update User function
-func (ctl *usersController) UpdateUser(c *gin.Context) {
-	var user models.User
-	ctl.db.Where("id = ?", c.Param("id")).First(&user)
-	if err := c.BindJSON(&user); err != nil {
-		log.Println("bind json failed when update user", err)
+func (ctl *userController) UpdateUser(c *gin.Context) {
+	ctx := c.Request.Context()
+	var req domain.UpdateParams
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Abort()
+		return
 	}
-	ctl.db.Save(&user)
-	c.JSON(200, &user)
+	if req.ID != c.Param("id") {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id mismatch"})
+		c.Abort()
+		return
+	}
+	resp, err := ctl.userService.Update(ctx, req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Abort()
+		return
+	}
+	c.JSON(http.StatusOK, &resp)
 }
 
 //DeleteUser Delete User function
-func (ctl *usersController) DeleteUser(c *gin.Context) {
-	var user models.User
-	ctl.db.Where("id = ?", c.Param("id")).Delete(&user)
-	c.JSON(200, "Delete success")
+func (ctl *userController) DeleteUser(c *gin.Context) {
+	ctx := c.Request.Context()
+	var req domain.DeleteParams
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Abort()
+		return
+	}
+	err := ctl.userService.Delete(ctx, req.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Abort()
+		return
+	}
+	c.JSON(http.StatusOK, "Delete success")
 }
 
-//NewUsersController init UsersController
-func NewUsersController(db *gorm.DB) IUsersController {
-	return &usersController{
-		db: db,
+//NewUsersController init UserController
+func NewUsersController(userService domain.UserService) domain.UserController {
+	return &userController{
+		userService: userService,
 	}
 }
