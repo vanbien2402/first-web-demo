@@ -5,8 +5,8 @@ services:
     volumes:
       - ./data/db:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "25432:5432"
     environment:
       - POSTGRES_USER=common
       - POSTGRES_PASSWORD=123456
-      - POSTGRES_DBNAME=postgres
+      - POSTGRES_DBNAME=common
