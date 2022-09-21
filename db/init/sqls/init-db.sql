@@ -12,9 +12,6 @@ create table users
     version    bigint                   default 1                 not null
 );
 
-alter table users
-    owner to common;
-
 create index users_ix1
     on users (is_del);
 

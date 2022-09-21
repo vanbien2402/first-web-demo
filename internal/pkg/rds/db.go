@@ -25,6 +25,12 @@ func Connect(config *Config) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+	sqlDB.SetMaxOpenConns(config.MaxOpenConn)
+	sqlDB.SetMaxIdleConns(config.MaxIdleConn)
 	log.Println("DB connected")
 	return db, nil
 }

@@ -1,12 +1,22 @@
 version: '3.8'
 services:
-  db:
-    image: postgres
+  db-0:
+    image: bitnami/postgresql-repmgr:11
+    restart: always
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - "./db:/docker-entrypoint-initdb.d"
+      - "./db/conf/postgresql.conf:/bitnami/postgresql/conf/conf.d/postgresql.conf"
     ports:
       - "25432:5432"
     environment:
-      - POSTGRES_USER=common
+      - POSTGRESQL_POSTGRES_PASSWORD=123456
+      - POSTGRES_USERNAME=common
       - POSTGRES_PASSWORD=123456
-      - POSTGRES_DBNAME=common
+      - REPMGR_PASSWORD=repmgrpassword
+      - REPMGR_PRIMARY_HOST=db-0
+      - REPMGR_PARTNER_NODES=db-0
+      - REPMGR_NODE_NAME=db-0
+      - REPMGR_NODE_NETWORK_NAME=db-0
+      - REPMGR_PRIMARY_PORT=5432
+      - REPMGR_PORT_NUMBER=5432
+      - POSTGRESQL_PORT_NUMBER=5432

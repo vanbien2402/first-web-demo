@@ -53,7 +53,7 @@ type UserRepository interface {
 
 //GetParams query users params
 type GetParams struct {
-	UserName string `json:"userName"`
+	UserName string `form:"userName" binding:"required"`
 }
 
 //CreateParams create user params

@@ -1,10 +1,10 @@
-package middleware
+package jwt
 
 import (
 	"errors"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	jwtGo "github.com/dgrijalva/jwt-go"
 
 	"github.com/vanbien2402/first-web-demo/internal/pkg/constant"
 )
@@ -15,7 +15,7 @@ var jwtKey = []byte("supersecretkey")
 type Claim struct {
 	UserName string `json:"user_name"`
 	Email    string `json:"email"`
-	jwt.StandardClaims
+	jwtGo.StandardClaims
 }
 
 //GenerateJWT generate jwt by userName and email
@@ -24,21 +24,21 @@ func GenerateJWT(userName, email string) (tokenString string, err error) {
 	claims := Claim{
 		UserName: userName,
 		Email:    email,
-		StandardClaims: jwt.StandardClaims{
+		StandardClaims: jwtGo.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwtGo.NewWithClaims(jwtGo.SigningMethodHS256, claims)
 	tokenString, err = token.SignedString(jwtKey)
 	return
 }
 
 //ValidateToken validate token
 func ValidateToken(signedToken string) (err error) {
-	token, err := jwt.ParseWithClaims(
+	token, err := jwtGo.ParseWithClaims(
 		signedToken,
 		&Claim{},
-		func(token *jwt.Token) (interface{}, error) {
+		func(token *jwtGo.Token) (interface{}, error) {
 			return jwtKey, nil
 		},
 	)

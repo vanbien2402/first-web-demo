@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/vanbien2402/first-web-demo/internal/api/middleware"
+	"github.com/vanbien2402/first-web-demo/internal/pkg/jwt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -44,7 +44,7 @@ func (ctl *userController) Login(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	tokenString, err := middleware.GenerateJWT(user.UserName, user.Email)
+	tokenString, err := jwt.GenerateJWT(user.UserName, user.Email)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		c.Abort()
@@ -57,7 +57,7 @@ func (ctl *userController) Login(c *gin.Context) {
 func (ctl *userController) GetUser(c *gin.Context) {
 	ctx := c.Request.Context()
 	var req domain.GetParams
-	if err := c.BindUri(&req); err != nil {
+	if err := c.ShouldBindQuery(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		c.Abort()
 		return
@@ -75,7 +75,7 @@ func (ctl *userController) GetUser(c *gin.Context) {
 func (ctl *userController) UpdateUser(c *gin.Context) {
 	ctx := c.Request.Context()
 	var req domain.UpdateParams
-	if err := c.BindJSON(&req); err != nil {
+	if err := c.ShouldBind(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		c.Abort()
 		return

@@ -38,14 +38,13 @@ func initRouter(router *gin.Engine,
 func (r *route) initCommonRouter(group *gin.RouterGroup) {
 	group.POST("/user/register", r.usersController.Register)
 	group.POST("/user/login", r.usersController.Login)
-	group.GET("/users", r.usersController.GetUser)
-	//group.PUT("/users/:id", r.usersController.UpdateUser)
+	group.GET("/user", r.usersController.GetUser)
 }
 
 func (r *route) initSecuredRouter(g *gin.RouterGroup) {
 	group := g.Use(middleware.Auth())
 	{
-		group.PUT("/users/:id", r.usersController.UpdateUser)
-		group.DELETE("/users/:id", r.usersController.DeleteUser)
+		group.PUT("/user/:id", r.usersController.UpdateUser)
+		group.DELETE("/user/:id", r.usersController.DeleteUser)
 	}
 }
