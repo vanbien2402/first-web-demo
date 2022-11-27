@@ -1,0 +1,21 @@
+name: first-web-demo-ci
+
+on:
+  push:
+    branches:
+
+jobs:
+  lint:
+    runs-on: ubuntu-18-04
+    steps:
+      - name: checkout source code
+        uses: actions/checkout@v2
+      - name: setup Go
+        uses: actions/setup-go@v2
+        with:
+          stable: 'false'
+          go-version: '1.18'
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.50.1

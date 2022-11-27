@@ -23,6 +23,6 @@ func NewModel(id string) Model {
 //BeforeUpdate update version
 func (m Model) BeforeUpdate(db *gorm.DB) (err error) {
 	db.Statement.Where("version=?", m.Version)
-	db.Statement.SetColumn("version=?", m.Version+1)
+	db.Statement.SetColumn("version", m.Version+1)
 	return nil
 }

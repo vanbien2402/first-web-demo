@@ -2,32 +2,37 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+
 	"github.com/vanbien2402/first-web-demo/internal/api/configs"
 	"github.com/vanbien2402/first-web-demo/internal/api/controllers"
 	"github.com/vanbien2402/first-web-demo/internal/api/domain"
 	"github.com/vanbien2402/first-web-demo/internal/api/middleware"
 	"github.com/vanbien2402/first-web-demo/internal/api/repositories"
 	"github.com/vanbien2402/first-web-demo/internal/api/services"
-	"gorm.io/gorm"
 )
 
 type route struct {
-	config          *configs.Config
-	usersController domain.UserController
+	config             *configs.Config
+	usersController    domain.UserController
+	categoryController domain.CategoryController
 }
 
 func initRouter(router *gin.Engine,
 	config *configs.Config,
 	db *gorm.DB) {
 	//init repository
-	userRepo := repositories.NewUsersRepository(db)
+	userRepo := repositories.NewUserRepository(db)
+	categoryRepo := repositories.NewCategoryRepository(db)
 
 	//init service
 	userService := services.NewUserService(userRepo)
+	categoryService := services.NewCategoryService(categoryRepo)
 
 	r := &route{
-		config:          config,
-		usersController: controllers.NewUsersController(userService),
+		config:             config,
+		usersController:    controllers.NewUsersController(userService),
+		categoryController: controllers.NewCategoryController(categoryService),
 	}
 	api := router.Group("/api")
 	r.initCommonRouter(api)

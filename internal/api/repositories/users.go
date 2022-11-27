@@ -36,7 +36,7 @@ func (r *userRepository) Create(ctx context.Context, user *models.User) error {
 
 func (r *userRepository) Update(ctx context.Context, user *models.User) error {
 	return r.db.WithContext(ctx).Model(user).
-		Select([]string{"user_name"}).
+		Select([]string{"user_name", "password", "email", "version"}).
 		Updates(user).
 		Error
 }
@@ -51,8 +51,8 @@ func (r *userRepository) CheckExist(ctx context.Context, userName string) bool {
 	return count > 0
 }
 
-//NewUsersRepository init user repository
-func NewUsersRepository(db *gorm.DB) domain.UserRepository {
+//NewUserRepository init user repository
+func NewUserRepository(db *gorm.DB) domain.UserRepository {
 	return &userRepository{
 		db: db,
 	}
