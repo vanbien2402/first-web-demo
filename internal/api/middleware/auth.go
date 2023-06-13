@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/vanbien2402/first-web-demo/internal/pkg/jwt"
 )
 
 func Auth() gin.HandlerFunc {
@@ -12,7 +13,7 @@ func Auth() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		if err := ValidateToken(tokenString); err != nil {
+		if err := jwt.ValidateToken(tokenString); err != nil {
 			c.JSON(401, gin.H{"error": err.Error()})
 			c.Abort()
 			return
