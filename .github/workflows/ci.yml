@@ -5,7 +5,7 @@ on:
     branches-ignore:
       - 'deployment/develop'
       - 'deployment/product'
-  workflow-call:
+  workflow_call:
 
 jobs:
   lint:
