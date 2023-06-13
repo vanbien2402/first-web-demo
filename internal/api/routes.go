@@ -1,13 +1,14 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/vanbien2402/first-web-demo/internal/api/configs"
 	"github.com/vanbien2402/first-web-demo/internal/api/controllers"
 	"github.com/vanbien2402/first-web-demo/internal/api/domain"
 	"github.com/vanbien2402/first-web-demo/internal/api/middleware"
 	"github.com/vanbien2402/first-web-demo/internal/api/repositories"
 	"github.com/vanbien2402/first-web-demo/internal/api/services"
+
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 

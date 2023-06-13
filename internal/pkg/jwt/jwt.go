@@ -1,12 +1,12 @@
-package middleware
+package jwt
 
 import (
 	"errors"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
-
 	"github.com/vanbien2402/first-web-demo/internal/pkg/constant"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 var jwtKey = []byte("supersecretkey")

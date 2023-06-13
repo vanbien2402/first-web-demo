@@ -2,9 +2,11 @@ package domain
 
 import (
 	"context"
-	"github.com/gin-gonic/gin"
+
 	"github.com/vanbien2402/first-web-demo/internal/api/models"
 	"github.com/vanbien2402/first-web-demo/internal/pkg/rds"
+
+	"github.com/gin-gonic/gin"
 )
 
 //UserController User Controller interface

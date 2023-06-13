@@ -1,12 +1,12 @@
 package controllers
 
 import (
-	"github.com/vanbien2402/first-web-demo/internal/api/middleware"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-
 	"github.com/vanbien2402/first-web-demo/internal/api/domain"
+	"github.com/vanbien2402/first-web-demo/internal/pkg/jwt"
+
+	"github.com/gin-gonic/gin"
 )
 
 type userController struct {
@@ -44,7 +44,7 @@ func (ctl *userController) Login(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	tokenString, err := middleware.GenerateJWT(user.UserName, user.Email)
+	tokenString, err := jwt.GenerateJWT(user.UserName, user.Email)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		c.Abort()
